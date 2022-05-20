@@ -84,7 +84,7 @@ const LoginScreen = ({ navigation }) => {
         <AntDesign name="twitter" size={24} color="dodgerblue" style={{padding:10}} />
       </View>
       
-      <Text style={{marginTop:50,}} >Don't have an account?</Text>
+      <Text style={{marginTop:50}} >Don't have an account?</Text>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("Register");

@@ -1,31 +1,44 @@
-import React,{useState} from "react";
-import { View, Text, Alert,Button,TextInput } from "react-native";
-import { auth } from "../firebase";
-import { AntDesign } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
+import React, { useState } from "react";
+import { View, Text, Alert, Button, TextInput } from "react-native";
 
-const RegisterScreen = ({navigation}) => {
-  const [username, setUsername] = useState("");
+import { auth } from "../firebase";
+
+import * as firebase from "firebase";
+import "firebase/firestore";
+
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+
+const RegisterScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [nickname, setNickname] = useState("");
+
   const [password, setPassword] = useState("");
   const [conpassword, setconPassword] = useState("");
- const passCheck=()=>{
-   if(password!==conpassword){
-     Alert.alert("password does not match")
-   }
- }
- const handleRegister=()=>{
-  auth
-  .createUserWithEmailAndPassword(username, password)
-  .then((userCredentials) => {
-    const user = userCredentials.user;
-    console.log("Registered with:", user.email);
-    navigation.navigate("Login");
-  })
-  .catch((error) => alert(error.message));
- }
+  const passCheck = () => {
+    if (password !== conpassword) {
+      Alert.alert("password does not match");
+    }
+  };
+  const handleRegister = () => {
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        console.log("Registered with:", user.email);
+        firebase.firestore().collection('Users').doc(user.uid).set({
+          name: name,
+          nickname:nickname,
+          email: email,
+        });
+        navigation.navigate("Login");
+      })
+      .catch((error) => alert(error.message));
+  };
   return (
-    <View style={{padding:15}}>
-        <Text
+    <View style={{ padding: 15 }}>
+      <Text
         style={{
           fontSize: 30,
           fontWeight: "bold",
@@ -41,7 +54,34 @@ const RegisterScreen = ({navigation}) => {
         style={{
           borderWidth: 1,
           width: "100%",
-
+          paddingHorizontal: 10,
+          marginBottom: 10,
+          borderColor: "#B2BEB5",
+          height: 34,
+        }}
+        placeholder="Your Name"
+        onChangeText={(value) => {
+          setName(value);
+        }}
+      />
+      <TextInput
+        style={{
+          borderWidth: 1,
+          width: "100%",
+          paddingHorizontal: 10,
+          marginBottom: 10,
+          borderColor: "#B2BEB5",
+          height: 34,
+        }}
+        placeholder="User Name"
+        onChangeText={(value) => {
+          setNickname(value);
+        }}
+      />
+      <TextInput
+        style={{
+          borderWidth: 1,
+          width: "100%",
           paddingHorizontal: 10,
           marginBottom: 10,
           borderColor: "#B2BEB5",
@@ -49,7 +89,7 @@ const RegisterScreen = ({navigation}) => {
         }}
         placeholder="Email"
         onChangeText={(value) => {
-          setUsername(value);
+          setEmail(value);
         }}
       />
       <TextInput
@@ -67,8 +107,7 @@ const RegisterScreen = ({navigation}) => {
           setPassword(value);
         }}
       />
-
-<TextInput
+      <TextInput
         style={{
           borderWidth: 1,
           width: "100%",
@@ -83,12 +122,14 @@ const RegisterScreen = ({navigation}) => {
           setconPassword(value);
         }}
       />
-
-<View style={{ marginBottom: 20, paddingTop: 20, borderRadius: 10 }}>
-        <Button title="Register" onPress={()=>{
-          passCheck();
-          handleRegister();
-        }} />
+      <View style={{ marginBottom: 20, paddingTop: 20, borderRadius: 10 }}>
+        <Button
+          title="Register"
+          onPress={() => {
+            passCheck();
+            handleRegister();
+          }}
+        />
       </View>
       <View
         style={{
@@ -99,12 +140,33 @@ const RegisterScreen = ({navigation}) => {
           alignItems: "center",
         }}
       >
-      <Text  style={{marginTop:50, color:"#B2BEB8"}}>or sign in with</Text>
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-        <AntDesign name="google" size={24} color="orange" style={{padding:10}} />
-        <Entypo name="facebook" size={24} color="dodgerblue" style={{padding:10}} />
-        <AntDesign name="twitter" size={24} color="dodgerblue" style={{padding:10}} />
-      </View>
+        <Text style={{ marginTop: 50, color: "#B2BEB8" }}>or sign in with</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <AntDesign
+            name="google"
+            size={24}
+            color="orange"
+            style={{ padding: 10 }}
+          />
+          <Entypo
+            name="facebook"
+            size={24}
+            color="dodgerblue"
+            style={{ padding: 10 }}
+          />
+          <AntDesign
+            name="twitter"
+            size={24}
+            color="dodgerblue"
+            style={{ padding: 10 }}
+          />
+        </View>
       </View>
     </View>
   );
